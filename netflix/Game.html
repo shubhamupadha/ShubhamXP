@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe (X & O)</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .game-container {
+    text-align: center;
+    color: #fff;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+
+  .mode-select {
+    margin-bottom: 20px;
+  }
+
+  button {
+    background-color: #ffb703;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 5px;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background-color: #fb8500;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 5px;
+    justify-content: center;
+    margin: 20px auto;
+  }
+
+  .cell {
+    width: 100px;
+    height: 100px;
+    background-color: #ffffff22;
+    border-radius: 10px;
+    font-size: 2em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .cell:hover {
+    background-color: #ffffff44;
+  }
+
+  .message {
+    font-size: 1.2em;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Tic Tac Toe</h1>
+    <div class="mode-select">
+      <button id="aiMode">Play vs AI</button>
+      <button id="friendMode">Play with Friend</button>
+    </div>
+    <div class="board" id="board"></div>
+    <div class="message" id="message"></div>
+    <button id="reset" style="display:none;">Restart</button>
+  </div>
+
+<script>
+  const boardElement = document.getElementById('board');
+  const messageElement = document.getElementById('message');
+  const resetButton = document.getElementById('reset');
+  let board = Array(9).fill(null);
+  let currentPlayer = 'X';
+  let vsAI = false;
+  let gameOver = false;
+
+  document.getElementById('aiMode').onclick = () => startGame(true);
+  document.getElementById('friendMode').onclick = () => startGame(false);
+  resetButton.onclick = resetGame;
+
+  function startGame(ai) {
+    vsAI = ai;
+    board = Array(9).fill(null);
+    currentPlayer = 'X';
+    gameOver = false;
+    boardElement.innerHTML = '';
+    messageElement.textContent = ai ? 'You vs AI! 🤖' : '2 Player Mode!';
+    resetButton.style.display = 'inline-block';
+    createBoard();
+  }
+
+  function createBoard() {
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.addEventListener('click', () => makeMove(i));
+      boardElement.appendChild(cell);
+    }
+  }
+
+  function makeMove(index) {
+    if (board[index] || gameOver) return;
+    board[index] = currentPlayer;
+    updateBoard();
+
+    if (checkWinner(currentPlayer)) {
+      messageElement.textContent = `${currentPlayer} Wins! 🎉`;
+      gameOver = true;
+      return;
+    }
+
+    if (board.every(cell => cell)) {
+      messageElement.textContent = "It's a Draw!";
+      gameOver = true;
+      return;
+    }
+
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+    if (vsAI && currentPlayer === 'O' && !gameOver) {
+      setTimeout(aiMove, 400);
+    }
+  }
+
+  function updateBoard() {
+    const cells = boardElement.querySelectorAll('.cell');
+    board.forEach((value, index) => {
+      cells[index].textContent = value || '';
+    });
+  }
+
+  function checkWinner(player) {
+    const winPatterns = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
+    return winPatterns.some(pattern =>
+      pattern.every(index => board[index] === player)
+    );
+  }
+
+  function aiMove() {
+    const emptyCells = board.map((v, i) => v ? null : i).filter(v => v !== null);
+
+    // Step 1: Try to WIN
+    for (let i of emptyCells) {
+      board[i] = 'O';
+      if (checkWinner('O')) {
+        updateBoard();
+        messageElement.textContent = 'AI Wins! 🤖';
+        gameOver = true;
+        return;
+      }
+      board[i] = null;
+    }
+
+    // Step 2: Block Player
+    for (let i of emptyCells) {
+      board[i] = 'X';
+      if (checkWinner('X')) {
+        board[i] = 'O';
+        updateBoard();
+        currentPlayer = 'X';
+        return;
+      }
+      board[i] = null;
+    }
+
+    // Step 3: Take Center
+    if (board[4] === null) {
+      board[4] = 'O';
+      updateBoard();
+      currentPlayer = 'X';
+      return;
+    }
+
+    // Step 4: Take Corner
+    const corners = [0, 2, 6, 8].filter(i => board[i] === null);
+    if (corners.length > 0) {
+      const move = corners[Math.floor(Math.random() * corners.length)];
+      board[move] = 'O';
+      updateBoard();
+      currentPlayer = 'X';
+      return;
+    }
+
+    // Step 5: Fallback Move
+    const move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    board[move] = 'O';
+    updateBoard();
+    currentPlayer = 'X';
+  }
+
+  function resetGame() {
+    startGame(vsAI);
+  }
+</script>
+</body>
+</html>

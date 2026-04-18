@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Pro Clone</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #141414;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        nav {
+            width: 100%;
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, #000, #141414);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .menu {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 15px;
+            transition: .3s;
+        }
+
+        .menu a:hover {
+            color: #e50914;
+        }
+
+        .btn {
+            background: #e50914;
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* HERO */
+        .hero {
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 50px;
+            background:
+                linear-gradient(to right, rgba(0, 0, 0, .95), rgba(0, 0, 0, .2)),
+                url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1600");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .left {
+            max-width: 550px;
+        }
+
+        .left h1 {
+            font-size: 62px;
+            margin-bottom: 15px;
+        }
+
+        .left p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .left button {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* RIGHT THUMBNAIL */
+        .right {
+            width: 420px;
+        }
+
+        .thumb {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .thumb img {
+            width: 100%;
+            display: block;
+        }
+
+        .thumb:hover {
+            transform: scale(1.04);
+        }
+
+        .play {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, .7);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+        }
+
+        /* SECTION */
+        .section {
+            padding: 45px 50px;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        /* SLIDER */
+        .slider-wrap {
+            position: relative;
+        }
+
+        .slider {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+        }
+
+        .slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .card {
+            min-width: 250px;
+            height: 350px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card:hover {
+            transform: scale(1.08);
+            z-index: 10;
+        }
+
+        .info {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 12px;
+            background: linear-gradient(to top, rgba(0, 0, 0, .9), transparent);
+            opacity: 0;
+            transition: .3s;
+        }
+
+        .card:hover .info {
+            opacity: 1;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 40%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, .7);
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        .prev {
+            left: -10px;
+        }
+
+        .next {
+            right: -10px;
+        }
+
+        /* VIDEO POPUP */
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .popup iframe {
+            width: 85%;
+            height: 80%;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 35px;
+            cursor: pointer;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #000;
+            padding: 60px 50px;
+            color: #999;
+        }
+
+        .footer-grid {
+            margin-top: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .footer-grid p {
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .footer-grid p:hover {
+            color: #fff;
+        }
+
+        /* MOBILE */
+        @media(max-width:900px) {
+            .hero {
+                flex-direction: column;
+                height: auto;
+                gap: 40px;
+            }
+
+            .right {
+                width: 100%;
+            }
+
+            .left h1 {
+                font-size: 45px;
+            }
+
+            nav {
+                padding: 15px 20px;
+            }
+
+            .section {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="menu">
+            <a href="#">Home</a>
+            <a href="#">TV Shows</a>
+            <a href="#">Movies</a>
+            <a href="#">New & Popular</a>
+            <a href="#">My List</a>
+            <button class="btn"><a href="login.html">Sign In</a></button>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+
+        <div class="left">
+            <h1>Unlimited movies, shows and more</h1>
+            <p>
+                Watch anywhere. Cancel anytime. Stream your favorite content in stunning quality.
+            </p>
+            <button onclick="openVideo()">▶ Watch Now</button>
+        </div>
+    </section>
+
+    <!-- TRENDING -->
+    <section class="section">
+        <h2>Dhurandhar The Revenge</h2>
+
+        <div class="slider-wrap">
+            <button class="arrow prev" onclick="slideLeft('row1')">❮</button>
+
+            <div class="slider" id="row1">
+
+                <div class="card" onclick="openVideo()">
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/3/32/Ranveer_Singh_in_2023_%281%29_%28cropped%29.jpg">
+                    <div class="info">Ranveer Singh</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMn8DEnHXKCgwFt2i35DpmhMQ8oATinjBFPAiaxsxAER8Tn5FJXfqDaA02Flmx3P4XxADDSLbrg_4f0ttsa9pPIc36dPQY7VJXOri1I2w&s=10">
+                    <div class="info">Sara Arjun</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgVo0CFDmttv43oI9B8HAq5gKety_3oZ87yOxBqRm8lBFwIlXjeWREFAkpr-Jk-8FaTj12eomquek2CD2A1T4E1-KSB5jbNi8GzI2X4Q&s=10">
+                    <div class="info">Akshaye Khanna</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4EY-j7FoMSpcSW5dKTCKlmvoEZHOth-SRXHRKu18OGXt0Cel4LV3EerqHV9tZ3LNy5U4vl7A1EJM2rzu56jWnk3H6Tdq-o62alzfnXcU&s=10">
+                    <div class="info">Arjun Rampal</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw9IxhWY4JaTxY3eCy1gQE6fLP9AdxbphHh-dSiIT-kDZiLQElJQZyEj9e1av8GifHbxT6JdtldE9UBhAUusyT9kddd0FoRDhNTBc5j9A&s=10">
+                    <div class="info">Danish Pandor</div>
+                </div>
+                <div class="card" onclick="openVideo()">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrWS1aT2i3wq5A_i0aq-2YJn9Wwwt2iSM3B5_J645yWXEfXcXQvEOm2ZNJpTe47ItSQRGsDsyB0hkat_B0oPtWg4-_y6veDHWSs2m58WY&s=10">
+                    <div class="info">Rakesh Bedi</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXbNAo_MvSj0LJNWFPtJCN6snJYGG8bjfs8pdHLVEWe57-90W4Nr6-3_cHJ8YoYFPMmkkOWBL3lTA9iPEw4KCO6YdWYJoD3w7-U_PXSeA&s=10">
+                    <div class="info">Saumya Tandon</div>
+                </div>
+
+            </div>
+
+            <button class="arrow next" onclick="slideRight('row1')">❯</button>
+        </div>
+    </section>
+
+    <!-- POPULAR -->
+    <section class="section">
+        <h2>Dhurandhar The Revenge</h2>
+
+        <div class="slider-wrap">
+            <button class="arrow prev" onclick="slideLeft('row2')">❮</button>
+
+            <div class="slider" id="row2">
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiirl7qg_x_OgQOHYmHvjj0kD8VHzT_OPfBWl-v_OmNua1TZx1SFxoTT5CweAusbq-s7-5BkYbq7M1OVom2QHcc2TZtJVVCizQf4bDfy8&s=10">
+                    <div class="info">Sanjay Dutt</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR439-ik6lYWnHLQct2YrqivAqpSEl_fUrR1ofYCT8IgakGMY_3_WQGJTyriOY_SxZMIjWEg1aKp7uAd0PK2lvb5s4kiMreSWOMyGqHtPY&s=10">
+                    <div class="info">Gaurav Gera</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6X8ZDbX2TTbqMFNLO1CBASr_RLN-I5ymyHd2dnr4rops3LCYcGq4ObkeAwXSUdVkZqeYk2_0q9TG2ghs1jHZ8vfTywJ4o4tW_rA6s2A&s=10">
+                    <div class="info">Ayesha Khan</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://i0.wp.com/www.socialnews.xyz/wp-content/uploads/2026/03/23/202603233717585.jpeg?quality=80&zoom=1&ssl=1">
+                    <div class="info">Jasmine Sandlas</div>
+                </div>
+
+                <div class="card" onclick="openVideo()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Krystle_D%27Souza_snapped_at_Anand_Pandit%E2%80%99s_birthday_bash_%28cropped%29.jpg">
+                    <div class="info">Krystle D'Souza</div>
+                </div>
+
+            </div>
+
+            <button class="arrow next" onclick="slideRight('row2')">❯</button>
+        </div>
+    </section>
+
+    <!-- VIDEO POPUP -->
+    <div class="popup" id="popup">
+        <span class="close" onclick="closeVideo()">✖</span>
+
+        <iframe id="frame" src="" allow="autoplay; encrypted-media" allowfullscreen>
+        </iframe>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Questions? Contact us.</p>
+
+        <div class="footer-grid">
+            <p>FAQ</p>
+            <p>Help Center</p>
+            <p>Account</p>
+            <p>Media Center</p>
+            <p>Investor Relations</p>
+            <p>Jobs</p>
+            <p>Ways to Watch</p>
+            <p>Terms of Use</p>
+            <p>Privacy</p>
+            <p>Cookie Preferences</p>
+            <p>Corporate Info</p>
+            <p>Contact Us</p>
+        </div>
+    </footer>
+
+    <script>
+        function openVideo() {
+            document.getElementById("popup").style.display = "flex";
+            document.getElementById("frame").src =
+                "https://www.youtube.com/embed/NHk7scrb_9I?autoplay=1";
+        }
+
+        function closeVideo() {
+            document.getElementById("popup").style.display = "none";
+            document.getElementById("frame").src = "";
+        }
+
+        function slideRight(id) {
+            document.getElementById(id).scrollLeft += 400;
+        }
+
+        function slideLeft(id) {
+            document.getElementById(id).scrollLeft -= 400;
+        }
+    </script>
+
+</body>
+
+</html>
